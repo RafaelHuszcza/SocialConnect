@@ -38,7 +38,7 @@ export function Dashboard({ title }) {
       setIsLoaded(true);
     }
   }
-  async function loadEntities() {
+  async function loadEntities(typeSearch) {
     if(search === ''){
       alert('Digite ao menos uma letra!');
       document.getElementById('search')?.focus();
@@ -51,7 +51,7 @@ export function Dashboard({ title }) {
       return;
     }  
     try {
-      let params = {params : {searchKey: searchKey , search: search , userName: data.userName}}
+      let params = {params : {searchKey: searchKey , search: search , userName: data.userName, typeSearch: typeSearch}}
       const response = await api.get("/entities", params);
 
       function noConnected(connect) {
@@ -215,7 +215,11 @@ export function Dashboard({ title }) {
           <option value="name">Nome</option>
 
         </select>
-        <button type="button" onClick={()=>loadEntities()}>Pesquisar</button>
+        <button type="button" onClick={()=>loadEntities("1")}>Pesquisar  1</button>
+      </div>
+      <div className="buttonsSearch">
+      <button type="button" onClick={()=>loadEntities("2")}>Pesquisar 2</button>
+      <button type="button" onClick={()=>loadEntities("3")}>Pesquisar 3</button>
       </div>
       <div className="cardsSearch">
              {cardsEntitiesConnect.map((card,index) => (
