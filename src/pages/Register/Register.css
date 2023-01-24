@@ -1,0 +1,27 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+}
+
+.login {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 50%;
+  justify-content: center;
+
+}
+.login small { 
+color: red;
+
+}
+
+.private{
+  display:flex;
+  flex-direction: row;
+  gap: 1rem
+
+}

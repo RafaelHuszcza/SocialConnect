@@ -1,0 +1,29 @@
+
+.articleCard{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: center;
+  align-items: center;
+  align-content: center;
+  height: 6rem;
+  margin: 0;
+  padding: 1rem;
+  
+}
+
+.typeOfConnections{
+  flex-direction: row;
+  display: flex;
+  gap: 0.5rem;
+}
+.typeOfConnections button{
+  height: 2rem;
+  padding: 0.2rem;
+  margin: 0;
+}
+.column{
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}

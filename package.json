@@ -1,0 +1,43 @@
+{
+  "name": "front-end-react",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@fullpage/react-fullpage": "^0.1.27",
+    "@mui/material": "^5.10.13",
+    "@react-spring/animated": "^9.4.5",
+    "@types/node": "^18.0.6",
+    "axios": "^0.27.2",
+    "buffer": "^6.0.3",
+    "dotenv": "^16.0.2",
+    "nuka-carousel": "^5.2.0",
+    "react": "^18.0.0",
+    "react-countup": "^6.3.1",
+    "react-dom": "^18.0.0",
+    "react-icons": "^4.7.1",
+    "react-loader-spinner": "^5.1.5",
+    "react-loading-icons": "^1.1.0",
+    "react-router-dom": "^6.3.0",
+    "react-spring": "^9.4.5",
+    "react-toastify": "^9.1.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.1.3",
+    "uuid": "^8.3.2",
+    "web-vitals": "^1.0.1",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^1.3.0",
+    "vite": "^2.9.12"
+  }
+}

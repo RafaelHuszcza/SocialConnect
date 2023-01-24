@@ -1,0 +1,102 @@
+.mainDashboard {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height:85vh;
+  align-items: center;
+background-color: var(--bg);
+  padding: 0;
+  margin: 0;
+}
+.header{
+  width: 100vw;
+  height: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 0 2rem;
+}
+.header .logout{
+ font-size: 2rem;
+ color: black;
+margin-right:1rem ;
+
+
+}
+.search{
+  height: 100%;
+  width: 50%;
+  margin: 0;
+
+}
+.cardsSearch{
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+  height: 70%;
+  overflow: auto;
+}
+.relations{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 50%;
+  overflow: auto;
+  margin: 0;
+  padding: 1rem;
+  gap: 2rem;
+}
+.footer{
+  height: 5vh;
+  display: flex;
+  text-align: center;
+  font-size: 0.7rem;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+ 
+}
+.article{
+  height: 6rem;
+  margin: 0;
+
+  padding: 1rem;
+}
+
+.searchDiv{
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  justify-content: space-between;
+}
+.searchDiv select{
+ width: 30%;
+ height: 3rem;
+}
+.searchDiv input{
+  width: 30%;
+  height: 3rem;
+ }
+ .searchDiv button{
+  min-width: 120px;
+  width: 30%;
+  height: 3rem;
+ }
+
+
+ .private{
+  display:flex;
+  flex-direction: row;
+  gap: 1rem
+}
+
+.form{
+  min-height: 70vh;
+  overflow: auto;
+  width: auto;
+  
+}
