@@ -12,6 +12,9 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GraphView } from "../GraphosView/GraphView";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import * as yup from "yup";
+import { ValidationError } from "yup";
+
 
 export function Dashboard({ title }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -26,7 +29,7 @@ export function Dashboard({ title }) {
   const [error, setError] = useState(null);
   const [isSubmiting, setIsSubmiting] = useState(false);
   const formRef = useRef();
-  const { data, signOut} = useAuth()
+  const { data, signOut, signIn} = useAuth()
   async function loadRelations() {
     try {
       let params = {params : {userName: data.userName }}
@@ -135,10 +138,15 @@ export function Dashboard({ title }) {
       delete newValues["name-checkbox"]
       newValues["data"] = {public: isPublic, private: isPrivate}
 
-
-      console.log(newValues)
-      const response = await api.post("signup", newValues);
+      const response = await api.put(`/edit?userName=${data.userName}`, newValues);
       setIsSubmiting(false);
+      let valuesToSet = {...newValues}
+      valuesToSet["userName"]= valuesToSet["user"]
+      valuesToSet["private"]= valuesToSet["data"]["private"]
+      valuesToSet["public"]= valuesToSet["data"]["public"]
+      delete  valuesToSet["user"]
+      delete  valuesToSet["data"]
+      signIn(valuesToSet);
       navigate("/Login");
     } catch (err) {
       if (err instanceof ValidationError) {
@@ -150,6 +158,7 @@ export function Dashboard({ title }) {
       setIsSubmiting(false);
     }
   }
+
   return (
     <>
     <GraphView/>
