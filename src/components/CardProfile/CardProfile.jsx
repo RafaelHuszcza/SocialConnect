@@ -30,7 +30,7 @@ export function CardProfile({ cardName, allData }) {
     try {
       let inputValues = {
         entityName: cardName,
-        relationType: "client",
+        relationType: "Client",
         operation: remove == false ? "add" : "remove",
       };
       const response = await api.put(
