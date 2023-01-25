@@ -166,11 +166,14 @@ class SocialConnect:
 
     # Função que retorna todas as relações de um usuário
     def getAllConnections(self, userName):
+
         user = self.getUser(userName)
         connections = []
         for x in user.adjacent:
             userToSend = self.getUser(x).copy()
-            connections.append([userToSend, self.getConnection(user, x)])
+            print("aa")
+            connections.append(
+                [userToSend, self.getConnection(user.key, x)])
         return connections
 
     def subGraph(self, user, levels):
