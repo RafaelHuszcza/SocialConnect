@@ -210,11 +210,11 @@ class SocialConnect:
         edges = subgraph.getEdges()
 
         for v1, v2, w in edges:
-            if w == "Amigo":
+            if w == "Friend":
                 color = "red"
-            elif w == "Conhecido":
+            elif w == "Acquaintance":
                 color = "blue"
-            elif w == "Família":
+            elif w == "Family":
                 color = "green"
             else:
                 color = "black"

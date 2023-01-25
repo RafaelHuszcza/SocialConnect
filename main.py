@@ -7,7 +7,6 @@ from SocialConnect import SocialConnect
 database = SocialConnect()
 database.fromPkl()
 server = CustomServer(database)
-plt.figure()
 
 try:
     server.start()
