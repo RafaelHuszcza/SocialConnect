@@ -1,9 +1,9 @@
 from MicroWebSrv2 import *
-from socialNet import SimpleNet
+from SocialConnect import SocialConnect
 
 
 class CustomServer(MicroWebSrv2):
-    def __init__(self, database: SimpleNet):
+    def __init__(self, database: SocialConnect):
         super().__init__()
         # Permitir requisições de qualquer endpoint
         self.AllowAllOrigins = True
@@ -25,12 +25,13 @@ class CustomServer(MicroWebSrv2):
     def Signup(self, request):
         newEntity = request.GetPostedJSONObject()
         response = self.database.createAccount(
-            newEntity['user'], newEntity['password'], newEntity['person'], newEntity['data'])
+            newEntity["userName"], newEntity)
+
         if response == "Usuário já Cadastrado":
             request.Response.ReturnUnauthorized("Usuário já Cadastrado")
         else:
             request.Response.ReturnOk()
-    # {"user":"Marcos","password":"Admin@","person":true, "data": {"private": {"name": "Rafael", "idade": 10}, "public": {"sexo": "masculino"} }}
+    # Edita uma usuário/empresa
 
     @WebRoute(PUT, '/edit', name="edit")
     def Edit(self, request):
@@ -38,15 +39,12 @@ class CustomServer(MicroWebSrv2):
         params = request.QueryParams
         userName = params['userName']
         response = self.database.updateAccount(
-            userName, newEntity['data'])
+            userName, newEntity)
         request.Response.ReturnOk()
-# params userName
-# {"user":"Marcos","password":"Admin@","person":true, "data": {"private": {"name": "Rafael", "idade": 10}, "public": {"sexo": "masculino"} }}
 
     # Logar usuário/empresa
     @WebRoute(POST, '/login', name="login")
     def Login(self, request):
-
         body = request.GetPostedJSONObject()
         userName = body['userName']
         password = body['password']
@@ -57,25 +55,17 @@ class CustomServer(MicroWebSrv2):
         if user.value['password'] != password:
             return request.Response.ReturnUnauthorized('Invalid information')
         userCopy = user.copy()
-
-        userCopy["userName"] = userName
         request.Response.ReturnOkJSON(userCopy)
 
-    # Carregar os nodos que se relacionam com o usuário
+    # Carregar os vertices que se relacionam com o usuário
     @WebRoute(GET, '/relations', name="relations")
     def LoadRelations(self, request):
         params = request.QueryParams
         userName = params['userName']
-        user = self.database.getUser(userName)
-        response = self.database.getAllConnections(user)
+        response = self.database.getAllConnections(userName)
+        return request.Response.ReturnOkJSON({'relations': response})
 
-        if user:
-            return request.Response.ReturnOkJSON({'relations': response})
-        request.Response.ReturnBadRequest()
-
-    # search=Rafae&searchKey=user
-
-    # Carregar as TODAS as entidades, por busca em largura
+    # Executa dois tipos de busca, baseado no parametro passado
     @WebRoute(GET, '/entities', name="entities")
     def LoadEntities(self, request):
         params = request.QueryParams
@@ -84,36 +74,23 @@ class CustomServer(MicroWebSrv2):
         searchKey = params['searchKey']
         typeSearch = params['typeSearch']
 
-        if typeSearch == "1":
-            searchResults = self.database.dumbSearch(
-                searchKey, search, userName)
+        # Se for tipo dumbSearch, executa a busca burra
+        if typeSearch == "dumbSearch":
+            searchResults = self.database.dumbSearch(userName,
+                                                     searchKey, search)
+            print(searchResults)
             request.Response.ReturnOkJSON({'entities': searchResults})
 
-        elif typeSearch == "2":
-            searchResultsSmart = self.database.smartSearch(
-                userName, searchKey, search, )
-            matches = []
-            for key in searchResultsSmart:
-                newKey = key.copy()
-                newKey["userName"] = key.key
-                try:
-                    connections = self.getConnection(
-                        self.database.getUser(userName), key)
-                    newKey["connections"] = connections
-                    matches.append(newKey)
-                except:
-                    matches.append(newKey)
-            request.Response.ReturnOkJSON({'entities': matches})
-            print(matches)
+        # Se for tipo dumbSearch, executa a busca inteligente
+        elif typeSearch == "smartSearch":
+            searchResults = self.database.smartSearch(
+                userName, searchKey, search)
 
-        # del searchResultsSmart[key]["adjacent"]
-        # print(searchResultsSmart)
-        request.Response.ReturnOkJSON({'entities': searchResults})
-        # search=Rafae&searchKey=user
-        request.Response.ReturnBadRequest()
+            request.Response.ReturnOkJSON({'entities': searchResults})
 
-    # Montar e retornar o grafo (.png), com e sem foca no usuário
-    @WebRoute(GET, '/graph/', name="graph")
+    # Montar e retornar o grafo (.jpg) baseado nem níveis
+
+    @WebRoute(GET, '/graph', name="graph")
     def CreateGraph(self, request):
         levels = None
         params = request.QueryParams
@@ -122,12 +99,11 @@ class CustomServer(MicroWebSrv2):
             levels = int(params['levels'])
         except:
             levels = None
-        user = self.database.getUser(userName)
-        self.shouldClearPlot = self.database.saveGraphImg(
-            user, levels)
+
+        self.database.saveGraphImg(userName, levels)
         return request.Response.ReturnFile('./files/graph.jpg')
 
-    # Adicionar/deletar a relação x do usuário de id userid
+    # Adicionar/deletar as relações de usuários
     @WebRoute(PUT, '/relation', name="toggle_relation")
     def EditRelation(self, request):
         body = request.GetPostedJSONObject()
@@ -136,29 +112,20 @@ class CustomServer(MicroWebSrv2):
         entityName = body['entityName']
         relationType = body['relationType']
         operation = body['operation']
-        user = self.database.getUser(userName)
-        entityName = self.database.getUser(entityName)
 
         if operation == 'add':
-            if relationType == "friendShip":
-                self.database.addFriendship(user, entityName)
-            elif relationType == "acquaintance":
-                self.database.addAcquaintance(user, entityName)
-            elif relationType == "family":
-                self.database.addFamily(user, entityName)
-            elif relationType == "client":
-                self.database.addClient(user, entityName)
+            if relationType == "Friend":
+                self.database.addFriendship(userName, entityName)
+            elif relationType == "Acquaintance":
+                self.database.addAcquaintance(userName, entityName)
+            elif relationType == "Family":
+                self.database.addFamily(userName, entityName)
+            elif relationType == "Client":
+                self.database.addClient(userName, entityName)
             return request.Response.ReturnOk()
 
         elif operation == 'remove':
-            if relationType == "friendShip":
-                self.database.removeFriendship(user, entityName)
-            elif relationType == "acquaintance":
-                self.database.removeAcquaintance(user, entityName)
-            elif relationType == "family":
-                self.database.removeFamily(user, entityName)
-            elif relationType == "client":
-                self.database.removeClient(user, entityName)
+            self.database.removeClient(userName, entityName)
             return request.Response.ReturnOk()
 
         request.Response.ReturnBadRequest()

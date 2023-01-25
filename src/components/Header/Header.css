@@ -1,0 +1,72 @@
+
+.header{
+  width: 100vw;
+  height: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 0 2rem;
+  background-color:#1894c4;
+  color: white;
+}
+.header .logout{
+  font-size: 1.5rem;
+  color:white;
+  margin-right:1rem ;
+}
+.image{
+  max-height:10vh ;
+  height: 10vh;
+}
+.menus {
+  display: flex;
+  gap: 2rem;
+}
+
+.menus a{
+  color: white;
+  cursor: pointer;
+}
+.edit {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  align-items: center;
+  overflow: auto;
+  margin: 0;
+}
+.formEdit{
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  height: auto;
+  margin: 0;
+  width: 80%;
+}
+.formEdit h2 {
+  margin: 0;
+  margin-bottom: 1rem;
+}
+.formEdit .privateEdit{
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 ;
+  gap: 1rem
+}
+.privateEditCheckbox{
+  gap: 1rem;
+  display: flex;
+  flex-direction: row;
+  width: auto;
+}
+
+.formEdit small { 
+  color: red;
+  }

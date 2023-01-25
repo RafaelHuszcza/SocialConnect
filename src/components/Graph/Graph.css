@@ -1,0 +1,37 @@
+.mainGraph {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 85vh;
+  padding: 1rem;
+  align-items: center;
+  background-color: var(--bg);
+  color: white;
+}
+.mainGraphForm {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  width: 60%;
+  height: 5rem;
+  padding: 1rem;
+  gap: 1rem;
+}
+.mainGraphLabel {
+  margin: 0;
+  color: white;
+}
+
+.mainGraphButton {
+  margin: 0;
+  color: white;
+}
+.mainGraphInput {
+  margin: 0;
+  max-width: 5rem;
+  background-color: white;
+  color: black;
+}
+.graphImage {
+  height: calc(85vh - 9rem);
+}

@@ -1,27 +1,50 @@
-.main {
+.mainRegister {
   display: flex;
   flex-direction: column;
   width: 100vw;
   height: 100vh;
   align-items: center;
+  overflow: auto;
+  margin: 0;
 }
 
-.login {
+.register {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  height: 100%;
+  height: auto;
+  margin: 0;
   width: 50%;
-  justify-content: center;
-
 }
-.login small { 
+.register small { 
 color: red;
+}
 
+.register h2 { 
+  margin: 0;
+  margin-bottom: 1rem;
+  }
+
+.loginNavigation {
+  display: flex;;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  align-content: center;
+  cursor: pointer;
 }
 
 .private{
   display:flex;
   flex-direction: row;
   gap: 1rem
+}
 
+.loginNavigation{
+  display: flex;;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  align-content: center;
+  cursor: pointer;
 }

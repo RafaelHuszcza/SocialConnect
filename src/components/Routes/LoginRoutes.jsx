@@ -1,14 +1,8 @@
-import { Outlet, Navigate } from 'react-router-dom';
-import { useAuth } from '../../context/authContext'
-
+import { Outlet, Navigate } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
 
 export const LoginRoutes = () => {
-  const { isLogged } = useAuth()
+  const { isLogged } = useAuth();
 
-  return(
-  isLogged() ?  <Navigate to={"/dashboard"}/> : <Outlet/> 
-
-
-  )
-}
-
+  return isLogged() ? <Navigate to={"/search"} /> : <Outlet />;
+};

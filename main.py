@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 from time import sleep
+from Server import CustomServer
+from SocialConnect import SocialConnect
 
-from server import CustomServer
-from socialNet import SimpleNet
-
-database = SimpleNet()
+# Instancia a classe SocialConnect e executa a leitura de dados se tiver algum dado a ser lido
+database = SocialConnect()
 database.fromPkl()
 server = CustomServer(database)
 plt.figure()

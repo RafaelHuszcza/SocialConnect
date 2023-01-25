@@ -46,7 +46,6 @@ export const Login = () => {
       const response = await api.post("login", inputValues);
       setIsSubmiting(false);
       signIn(response.data);
-      // navigate("/dashboard");
     } catch (err) {
       if (err instanceof ValidationError) {
         setError(err.errors[0]);
@@ -60,7 +59,7 @@ export const Login = () => {
 
 
   return (
-    <main className="main">
+    <main className="mainLogin">
       <section className="login">
           <form onSubmit={onSubmit} ref={formRef}>
           <h2>Login</h2>
@@ -74,7 +73,7 @@ export const Login = () => {
               {isSubmiting ? <Oval/>: null}
               {!isSubmiting ? "Entrar" : null}
             </button>
-            <a className="register" onClick={()=> navigate("/register")}> Registrar-se</a>
+            <a className="registerNavigation" onClick={()=> navigate("/register")}> Registrar-se</a>
           </form>
             
       </section>
