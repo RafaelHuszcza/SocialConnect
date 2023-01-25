@@ -150,6 +150,7 @@ class Graph:
             return None
 
     def BFS(self, start=None, visible=True, testFunction=None):
+
         if start:
             if start in self.vertices:
                 start = self.vertices[start]
@@ -164,9 +165,8 @@ class Graph:
         while queue:
             vertex = queue.pop(0)
             if not visited[vertex]:
-
                 if testFunction and testFunction(vertex):
-                    matches.append(vertex)
+                    matches.append(vertex.copy())
                 visited[vertex] = 1
                 queue.extend([v[0] for v in vertex.adjacent.values()])
 

@@ -87,12 +87,9 @@ class SocialConnect:
         """
         Busca Burra, ou seja  retorna todos os itens do grafo, relacionado com os valores passados
         """
-        print("oi")
         matches = []
         for v in self.G.vertices.values():
-            print("oi")
             if key == "userName" and value in v.key:
-                print("kk")
                 try:
                     connections = self.getConnection(userName, v.key)
                     copy = v.copy()
@@ -102,7 +99,6 @@ class SocialConnect:
                     matches.append(copy)
 
             elif key in v.value["data"]["public"].keys() and value in v.value["data"]["public"][key]:
-
                 try:
                     connections = self.getConnection(userName, v)
                     copy = v.copy()

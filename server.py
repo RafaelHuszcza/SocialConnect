@@ -78,7 +78,6 @@ class CustomServer(MicroWebSrv2):
         if typeSearch == "dumbSearch":
             searchResults = self.database.dumbSearch(userName,
                                                      searchKey, search)
-            print(searchResults)
             request.Response.ReturnOkJSON({'entities': searchResults})
 
         # Se for tipo dumbSearch, executa a busca inteligente
