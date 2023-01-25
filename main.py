@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from time import sleep
-from Server import CustomServer
+from server import CustomServer
 from SocialConnect import SocialConnect
 
 # Instancia a classe SocialConnect e executa a leitura de dados se tiver algum dado a ser lido
