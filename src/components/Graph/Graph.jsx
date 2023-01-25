@@ -15,19 +15,14 @@ export function Graph() {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      fetch(
-        `http://127.0.0.1:3000/graph/?userName=${data.userName}&levels=${
-          levels >= 0 ? levels : null
-        }`,
-        {
-          method: "GET",
-        }
-      )
+      const params = {
+        userName: data.userName,
+        levels: levels >= 0 ? levels : undefined,
+      };
+      const response = await api
+        .get(`graph/`, { params, responseType: "blob" })
         .then((response) => {
-          return response.blob();
-        })
-        .then((blob) => {
-          let objectURL = URL.createObjectURL(blob);
+          const objectURL = URL.createObjectURL(new Blob([response.data]));
           setLoadedImg(true);
           setImgUrl(objectURL);
         });

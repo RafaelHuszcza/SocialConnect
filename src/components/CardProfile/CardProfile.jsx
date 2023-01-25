@@ -22,7 +22,6 @@ export function CardProfile({ cardName, allData }) {
         `/relation?userName=${data.userName}`,
         inputValues
       );
-      action();
     } catch (err) {
       console.log(err);
     }
@@ -38,7 +37,6 @@ export function CardProfile({ cardName, allData }) {
         `/relation?userName=${data.userName}`,
         inputValues
       );
-      action();
     } catch (err) {
       console.log(err);
     }

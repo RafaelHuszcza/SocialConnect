@@ -125,7 +125,7 @@ class CustomServer(MicroWebSrv2):
             return request.Response.ReturnOk()
 
         elif operation == 'remove':
-            self.database.removeClient(userName, entityName)
+            self.database.removeRelation(userName, entityName)
             return request.Response.ReturnOk()
 
         request.Response.ReturnBadRequest()
