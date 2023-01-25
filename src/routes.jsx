@@ -40,7 +40,7 @@ export function AppRoutes() {
             element={<MainPages content={Graph} title="Gerar Grafo" />}
           />
         </Route>
-        {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );
