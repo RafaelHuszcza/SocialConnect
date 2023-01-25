@@ -26,7 +26,8 @@ export function CardProfile({cardName, allData, connections, action}) {
   }
   async function setNewRealtionClient(remove=false) {
     try {
-      let inputValues = {entityName: cardName, relationType:"client" , operation: remove == false? "add": "remove"}
+      let inputValues = {entityName: cardName, relationType:"C
+lient" , operation: remove == false? "add": "remove"}
       const response = await api.put(`/relation?userName=${data.userName}`,inputValues);
       action()
 
