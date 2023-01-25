@@ -100,7 +100,7 @@ class CustomServer(MicroWebSrv2):
         except:
             levels = None
 
-        self.database.saveGraphImg(userName, levels)
+        self.shouldClearPlot = self.database.saveGraphImg(userName, levels)
         return request.Response.ReturnFile('./files/graph.jpg')
 
     # Adicionar/deletar as relações de usuários
