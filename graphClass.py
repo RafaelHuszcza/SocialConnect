@@ -27,10 +27,6 @@ class Vertex:
         else:
             return 'Vértice não existe'
 
-    def redefineEdge(self, vertex, new_w):
-        if vertex in self.adjacent:
-            self.adjacent[vertex.key] = (vertex, new_w)
-
     def getConnections(self):
         string = ''
         for adjacentKey in self.adjacent.keys():
@@ -52,19 +48,8 @@ class Vertex:
             copy[key] = self.value[key]
         return copy
 
-    def getRelations(self, weight):
-        if (weight in self.adjacent):
-            # Retorna as relações com um nodo em específico
-            return True, self.adjacent[weight]
-        else:
-            return False
-
     def __repr__(self):
         return f"(Key: {self.key}, Value: {self.value}, adjas: {self.adjacent})"
-
-    def __iter__(self):
-        for key in self.adjacent.keys():
-            yield key, self.adjacent[key]
 
 
 class Graph:
@@ -172,29 +157,6 @@ class Graph:
 
         return matches
 
-    def DFS_rec(self, vertex, visible, visited, testFunction=None, matches=[]):
-        if not visited[vertex]:
-            if visible:
-                print("")
-            if testFunction and testFunction(vertex):
-                matches.append(vertex)
-            visited[vertex] = 1
-            for v in vertex.adjacent.values():
-                self.DFS_rec(v[0], visible, visited, testFunction, matches)
-
-    def DFS(self, start, visible=True, testFunction=None):
-        if start:
-            if start in self.vertices:
-                start = self.vertices[start]
-            else:
-                return 'Vértice não existe'
-        else:
-            start = next(iter(self.vertices.values()))
-        matches = []
-        self.DFS_rec(start, visible, visited=dict.fromkeys(
-            self.vertices.values(), 0), testFunction=testFunction, matches=matches)
-        return matches
-
     def getVertices(self):
         return self.vertices.keys()
 
@@ -205,27 +167,3 @@ class Graph:
                 for key2, v2 in v.adjacent.items():
                     edges.append((key, key2, v2[1]))
         return edges
-
-    def dumpToPkl(self, filepath):
-        with open(filepath, "wb") as outp:
-            pickle.dump(self, outp, pickle.HIGHEST_PROTOCOL)
-
-
-if __name__ == "__main__":
-
-    ls = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
-    g = Graph()
-    vs = [g.addVertex(i, ls[i]) for i in range(1, 9)]
-    g.addEdge(1, 2)
-    g.addEdge(1, 3)
-    g.addEdge(3, 4)
-    g.addEdge(3, 5)
-    g.addEdge(4, 2)
-    g.addEdge(4, 5)
-    g.addEdge(4, 6)
-    g.addEdge(4, 8)
-    g.addEdge(6, 5)
-    g.addEdge(7, 2)
-    g.addEdge(8, 7)
-
-    g.getEdges()

@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import copy
 from matplotlib.lines import Line2D
+import math
+
 
 # Classe Social Connect serve para comunicação do servidor com a classe.
 
@@ -64,16 +66,20 @@ class SocialConnect:
     ao serão retornados
     """
 
-    def smartSearch(self, userName, key, value):
+    def Search(self, userName, key, value):
         """
-        Busca esperta, ou seja essa busca retorna somente itens relacionados através de busca em largura, itens não relacionados não serão retornados
+        Busca por amplitude e após adiciona os faltantes na lista
         """
+        listVertices = (list(self.G.vertices.keys()))
+        listVertices.remove(userName)
+
         if key == "userName":
             matches = self.G.BFS(
                 userName, True, lambda v: value in v.key)
         else:
             matches = self.G.BFS(userName, True, lambda v: key in v.value["data"]["public"].keys(
             ) and value in v.value["data"]["public"][key])
+
         for entity in matches:
             try:
                 connections = self.getConnection(userName, entity)
@@ -81,32 +87,32 @@ class SocialConnect:
             except:
                 None
 
-        return matches
+        for x in matches:
+            if x["userName"] in listVertices:
+                listVertices.remove(x["userName"])
 
-    def dumbSearch(self, userName, key, value):
+        if listVertices:
+            return matches + self.dumbSearch(key, value, listVertices)
+        else:
+            return matches
+
+    def dumbSearch(self, key, value, list):
         """
         Busca Burra, ou seja  retorna todos os itens do grafo, relacionado com os valores passados
         """
         matches = []
-        for v in self.G.vertices.values():
+        for v in list:
+            print(v)
+            v = self.getUser(v)
             if key == "userName" and value in v.key:
-                try:
-                    connections = self.getConnection(userName, v.key)
-                    copy = v.copy()
-                    copy["connections"] = connections
-                    matches.append(copy)
-                except:
-                    matches.append(copy)
+                copy = v.copy()
+                copy["connections"] = None
+                matches.append(copy)
 
             elif key in v.value["data"]["public"].keys() and value in v.value["data"]["public"][key]:
-                try:
-                    connections = self.getConnection(userName, v)
-                    copy = v.copy()
-                    copy["connections"] = connections
-                    matches.append(copy)
-                except:
-                    matches.append(copy)
-
+                copy = v.copy()
+                copy["connections"] = None
+                matches.append(copy)
         return matches
 
     # Função que retorna a relação entre 2 usuários
@@ -162,12 +168,10 @@ class SocialConnect:
 
     # Função que retorna todas as relações de um usuário
     def getAllConnections(self, userName):
-
         user = self.getUser(userName)
         connections = []
         for x in user.adjacent:
             userToSend = self.getUser(x).copy()
-            print("aa")
             connections.append(
                 [userToSend, self.getConnection(user.key, x)])
         return connections
@@ -179,6 +183,7 @@ class SocialConnect:
         newG = copy.deepcopy(self.G)
         vs = []
         level_vs = [user]
+        pos = {user.key: [0, 0]}
         for i in range(levels):
             next_vs = []
             for vertex in level_vs:
@@ -187,17 +192,26 @@ class SocialConnect:
             if not next_vs:
                 break
             level_vs = next_vs
+            for i in range(len(vs)):
+                if i == 0:
+                    continue
+                else:
+                    x = round(math.cos((2 * math.pi * i) / (len(vs)-1)), 2)
+                    y = round(math.sin((2 * math.pi * i) / (len(vs)-1)), 2)
+                    nameKey = vs[i].key
+                    pos[nameKey] = [x, y]
 
         for v in self.G.vertices.values():
             if v not in vs:
                 newG.removeVertex(v.key)
-        return newG
+        return newG, pos
+
     # Cria um grafo usando a biblioteca networkx e salva ele
 
     def saveGraphImg(self, userName, levels=None):
         user = self.getUser(userName)
         if levels:
-            subgraph = self.subGraph(user, levels)
+            subgraph, pos = self.subGraph(user, levels)
         else:
             subgraph = self.G
         DG = nx.DiGraph()
@@ -215,11 +229,16 @@ class SocialConnect:
             else:
                 color = "black"
             DG.add_edge(v1, v2, color=color)
-        pos = nx.circular_layout(DG)
+        if levels and levels >= 3:
+
+            pos = nx.circular_layout(DG)
+
+        if not levels:
+            pos = nx.circular_layout(DG)
+        pos[userName] = [0, 0]
         edges = DG.edges()
         colors = [DG[u][v]['color'] for u, v in edges]
-        nx.draw(DG, pos, with_labels=True, edge_color=colors,
-                node_color="paleturquoise")
+        nx.draw(DG, pos, with_labels=True, edge_color=colors)
         legend_elements = [
             Line2D([0], [0], marker='o', color='w', label='Família',
                    markerfacecolor='g', markersize=8),
@@ -231,5 +250,5 @@ class SocialConnect:
                    markerfacecolor='black', markersize=8),
         ]
         plt.legend(handles=legend_elements, loc='upper right')
-        plt.savefig("files/graph.jpg", dpi=1000)
+        plt.savefig("files/graph.jpg")
         plt.clf()

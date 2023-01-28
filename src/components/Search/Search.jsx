@@ -36,7 +36,6 @@ export function Search() {
           searchKey: searchKey,
           search: search,
           userName: data.userName,
-          typeSearch: typeSearch,
         },
       };
       console.log(params);
@@ -88,16 +87,9 @@ export function Search() {
           <button
             className="searchDivButton"
             type="button"
-            onClick={() => loadEntities("dumbSearch")}
+            onClick={() => loadEntities()}
           >
-            Pesquisar Dumb
-          </button>
-          <button
-            className="searchDivButton"
-            type="button"
-            onClick={() => loadEntities("smartSearch")}
-          >
-            Pesquisar Smart
+            Pesquisar
           </button>
         </div>
 

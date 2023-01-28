@@ -20,7 +20,7 @@ export function Graph() {
         levels: levels >= 0 ? levels : undefined,
       };
       const response = await api
-        .get(`graph/`, { params, responseType: "blob" })
+        .get(`graph`, { params, responseType: "blob" })
         .then((response) => {
           const objectURL = URL.createObjectURL(new Blob([response.data]));
           setLoadedImg(true);

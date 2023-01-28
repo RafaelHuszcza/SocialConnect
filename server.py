@@ -1,130 +1,110 @@
-from MicroWebSrv2 import *
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 from SocialConnect import SocialConnect
+from time import sleep
+
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-class CustomServer(MicroWebSrv2):
-    def __init__(self, database: SocialConnect):
-        super().__init__()
-        # Permitir requisições de qualquer endpoint
-        self.AllowAllOrigins = True
-        # Permtir troca de recursos (dados) sem protocolo de segurança
-        self.CORSAllowAll = True
-        # Alterar a porta onde o backend estará disponível
-        self.BindAddress = ('localhost', 3000)
-        self.database = database
-        self.shouldClearPlot = False
+database = SocialConnect()
+database.fromPkl()
 
-    def start(self):
-        self.StartManaged()
+# Cadastrar usuário/empresa
 
-    def stop(self,):
-        self.Stop()
 
-    # Cadastrar usuário/empresa
-    @WebRoute(POST, '/signup', name="signup")
-    def Signup(self, request):
-        newEntity = request.GetPostedJSONObject()
-        response = self.database.createAccount(
-            newEntity["userName"], newEntity)
+@app.route("/signup", methods=["POST"])
+def signup():
+    newEntity = request.get_json()
+    response = database.createAccount(newEntity["userName"], newEntity)
+    if response == "Usuário já Cadastrado":
+        return jsonify({"error": "Usuário já Cadastrado"}), 401
+    else:
+        return jsonify({"message": "Conta criada com sucesso"}), 200
 
-        if response == "Usuário já Cadastrado":
-            request.Response.ReturnUnauthorized("Usuário já Cadastrado")
-        else:
-            request.Response.ReturnOk()
-    # Edita uma usuário/empresa
 
-    @WebRoute(PUT, '/edit', name="edit")
-    def Edit(self, request):
-        newEntity = request.GetPostedJSONObject()
-        params = request.QueryParams
-        userName = params['userName']
-        response = self.database.updateAccount(
-            userName, newEntity)
-        request.Response.ReturnOk()
+@app.route('/edit', methods=['PUT'])
+def Edit():
+    newEntity = request.get_json()
+    userName = request.args.get('userName')
+    response = database.updateAccount(userName, newEntity)
+    if response:
+        return "Conta atualizada com sucesso", 200
+    else:
+        return "Não foi possível atualizar a conta", 400
 
-    # Logar usuário/empresa
-    @WebRoute(POST, '/login', name="login")
-    def Login(self, request):
-        body = request.GetPostedJSONObject()
-        userName = body['userName']
-        password = body['password']
 
-        user = self.database.getUser(userName)
-        if not user:
-            return request.Response.ReturnBadRequest()
-        if user.value['password'] != password:
-            return request.Response.ReturnUnauthorized('Invalid information')
-        userCopy = user.copy()
-        request.Response.ReturnOkJSON(userCopy)
+@app.route('/login', methods=['POST'])
+def login():
+    body = request.get_json()
+    userName = body['userName']
+    password = body['password']
+    user = database.getUser(userName)
+    if not user:
+        return jsonify({'error': 'Usuário não encontrado'}), 400
+    if user.value['password'] != password:
+        return jsonify({'error': 'Informações inválidas'}), 401
+    userCopy = user.copy()
+    return jsonify(userCopy), 200
 
-    # Carregar os vertices que se relacionam com o usuário
-    @WebRoute(GET, '/relations', name="relations")
-    def LoadRelations(self, request):
-        params = request.QueryParams
-        userName = params['userName']
-        response = self.database.getAllConnections(userName)
-        return request.Response.ReturnOkJSON({'relations': response})
 
-    # Executa dois tipos de busca, baseado no parametro passado
-    @WebRoute(GET, '/entities', name="entities")
-    def LoadEntities(self, request):
-        params = request.QueryParams
-        userName = params['userName']
-        search = params['search']
-        searchKey = params['searchKey']
-        typeSearch = params['typeSearch']
+@app.route('/relations', methods=['GET'])
+def LoadRelations():
+    userName = request.args.get('userName')
+    response = database.getAllConnections(userName)
+    return jsonify({'relations': response}), 200
 
-        # Se for tipo dumbSearch, executa a busca burra
-        if typeSearch == "dumbSearch":
-            searchResults = self.database.dumbSearch(userName,
-                                                     searchKey, search)
-            request.Response.ReturnOkJSON({'entities': searchResults})
 
-        # Se for tipo dumbSearch, executa a busca inteligente
-        elif typeSearch == "smartSearch":
-            searchResults = self.database.smartSearch(
-                userName, searchKey, search)
+@app.route('/entities', methods=['GET'])
+def LoadEntities():
+    userName = request.args.get('userName')
+    search = request.args.get('search')
+    searchKey = request.args.get('searchKey')
+    try:
+        searchResults = database.Search(userName, searchKey, search)
+        return jsonify({'entities': searchResults}), 200
+    except:
+        return jsonify({'error': 'Invalid typeSearch'}), 400
 
-            request.Response.ReturnOkJSON({'entities': searchResults})
 
-    # Montar e retornar o grafo (.jpg) baseado nem níveis
-
-    @WebRoute(GET, '/graph', name="graph")
-    def CreateGraph(self, request):
+@app.route('/graph', methods=['GET'])
+def CreateGraph():
+    levels = None
+    userName = request.args.get('userName')
+    try:
+        levels = int(request.args.get('levels'))
+    except:
         levels = None
-        params = request.QueryParams
-        userName = params['userName']
-        try:
-            levels = int(params['levels'])
-        except:
-            levels = None
 
-        self.shouldClearPlot = self.database.saveGraphImg(userName, levels)
-        return request.Response.ReturnFile('./files/graph.jpg')
+    database.saveGraphImg(userName, levels)
+    return send_file('./files/graph.jpg', mimetype='image/jpg')
 
-    # Adicionar/deletar as relações de usuários
-    @WebRoute(PUT, '/relation', name="toggle_relation")
-    def EditRelation(self, request):
-        body = request.GetPostedJSONObject()
-        params = request.QueryParams
-        userName = params['userName']
-        entityName = body['entityName']
-        relationType = body['relationType']
-        operation = body['operation']
 
-        if operation == 'add':
-            if relationType == "Friend":
-                self.database.addFriendship(userName, entityName)
-            elif relationType == "Acquaintance":
-                self.database.addAcquaintance(userName, entityName)
-            elif relationType == "Family":
-                self.database.addFamily(userName, entityName)
-            elif relationType == "Client":
-                self.database.addClient(userName, entityName)
-            return request.Response.ReturnOk()
+@app.route("/relation", methods=["PUT"])
+def toggle_relation():
+    userName = request.args.get('userName')
+    body = request.get_json()
+    entityName = body['entityName']
+    relationType = body['relationType']
+    operation = body['operation']
+    if operation == 'add':
+        if relationType == "Friend":
+            database.addFriendship(userName, entityName)
+        elif relationType == "Acquaintance":
+            database.addAcquaintance(userName, entityName)
+        elif relationType == "Family":
+            database.addFamily(userName, entityName)
+        elif relationType == "Client":
+            database.addClient(userName, entityName)
+        return jsonify(status="Ok"), 200
 
-        elif operation == 'remove':
-            self.database.removeRelation(userName, entityName)
-            return request.Response.ReturnOk()
+    elif operation == 'remove':
+        database.removeRelation(userName, entityName)
+        return jsonify(status="Ok"), 200
 
-        request.Response.ReturnBadRequest()
+    else:
+        return jsonify(status="Bad request"), 400
+
+
+if __name__ == '__main__':
+    app.run(host='localhost', port=3000, debug=True)
